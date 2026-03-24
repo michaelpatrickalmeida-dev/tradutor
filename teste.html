@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradutor App</title>
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+    <div class="caixaApp">
+        <textarea class="texto" placeholder="Digite o texto para traduzir..."></textarea>
+        
+        <div class="caixa-interna">
+            <select class="idioma">
+                <option value="alemao">Alemão</option>
+                <option value="ingles">Inglês</option>
+                <option value="japones">Japonês</option>
+            </select>
+            <button class="btn-traduzir">Traduzir</button>
+            <button class="btn-microfone">🎤 Microfone</button>
+        </div>
+        
+        <div class="traducao">
+            <h1 class="titulo-traducao">Tradução</h1>
+            <p class="texto-traduzido">Texto Traduzido</p>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidade básica do botão traduzir
+        const btnTraduzir = document.querySelector('.btn-traduzir');
+        const textoOriginal = document.querySelector('.texto');
+        const textoTraduzido = document.querySelector('.texto-traduzido');
+        const idiomaSelect = document.querySelector('.idioma');
+
+        btnTraduzir.addEventListener('click', function() {
+            const texto = textoOriginal.value;
+            const idioma = idiomaSelect.value;
+            
+            if (texto.trim() === '') {
+                textoTraduzido.textContent = 'Digite um texto para traduzir!';
+                return;
+            }
+            
+            // Simulação de tradução (aqui você pode integrar com uma API real)
+            textoTraduzido.textContent = `[${idiomaSelect.options[idiomaSelect.selectedIndex].text}] ${texto} (traduzido)`;
+        });
+
+        // Funcionalidade básica do microfone (Web Speech API)
+        const btnMicrofone = document.querySelector('.btn-microfone');
+        
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'pt-BR';
+            recognition.interimResults = false;
+
+            btnMicrofone.addEventListener('click', function() {
+                recognition.start();
+                btnMicrofone.textContent = '🎤 Ouvindo...';
+            });
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                textoOriginal.value = transcript;
+                btnMicrofone.textContent = '🎤 Microfone';
+            };
+
+            recognition.onerror = function() {
+                btnMicrofone.textContent = '🎤 Microfone';
+                alert('Erro ao capturar áudio. Tente novamente.');
+            };
+
+            recognition.onend = function() {
+                btnMicrofone.textContent = '🎤 Microfone';
+            };
+        } else {
+            btnMicrofone.disabled = true;
+            btnMicrofone.textContent = '🎤 (não suportado)';
+        }
+    </script>
+</body>
+</html>
